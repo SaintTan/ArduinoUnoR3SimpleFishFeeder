@@ -1,5 +1,6 @@
 #include <Servo.h>
 
+//innitialize all variables
 Servo myservo;
 
 unsigned long timenow;
@@ -8,26 +9,30 @@ const int buttonPin = 2;
 const unsigned long feedtime = 86400000;
 bool feedstart = false;
 
-int buttonState = 0; 
+int buttonState = 0;
+
 void setup() {
-  // put your setup code here, to run once:
+  // attaching servo to digital input/output 9
   myservo.attach(9);
   Serial.begin(9600);
+  //button setup to reduce parts used for buttons
   pinMode(buttonPin, INPUT);
   digitalWrite(buttonPin, HIGH);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  //read the state of the button
   buttonState = digitalRead(buttonPin);
+  //dispense food when the button is pressed and start the timer for daily feeding
   if(buttonState == LOW){
     feedstart = true;
-    myservo.write(180);
+    myservo.write(90);
     delay(1500);
     delay(5000);
     myservo.write(0);
     delay(1500);
   }
+  //dispense food when it reaches 24 hours
   else if(feedstart){
     timenow= millis();
 
@@ -35,12 +40,13 @@ void loop() {
     if(timebetween >= feedtime){
       Serial.print(timebetween);
       timebefore = timenow;
-      myservo.write(180);
+      myservo.write(90);
       delay(1500);
       delay(5000);
       myservo.write(0);
       delay(1500);
     }
+    //reseting timer if timenow goes more than 50 days in milli seconds
     else if (timebetween <= 0){
       timebefore = timenow;
     }
