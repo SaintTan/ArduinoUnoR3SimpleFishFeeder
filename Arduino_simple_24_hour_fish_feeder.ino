@@ -16,12 +16,12 @@ const int buttonPin = 2;
 const int servoDelay = 1500;
 const int feedDelay = 3000;
 const unsigned long dayTime = 86400000;
-const unsigned long feedTime = 17000 -(2*servoDelay) - feedDelay; 
-const unsigned long feedCycle = (feedTime/8000)+1;
+const unsigned long feedTime = dayTime -(2*servoDelay) - feedDelay; 
+const int feedCycle = (feedTime/8000)+1;
 bool feedstart = false;
 
 int buttonState = 0;
-unsigned long nbr_remaining = 0 ;
+int nbr_remaining = 0 ;
 
 ISR(WDT_vect){
   wdt_reset();
@@ -45,8 +45,6 @@ void loop() {
   }
   if(feedstart){
     dispenseFood();
-    Serial.println("starto");
-    Serial.flush();
     sleepControl(feedCycle);
   }
 }
@@ -61,7 +59,6 @@ void configure_wdt(){
 
 void sleepControl(unsigned long ncycles){
   nbr_remaining = ncycles;
-  
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   power_adc_disable();
   while (nbr_remaining > 0){
